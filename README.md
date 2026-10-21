@@ -1,323 +1,485 @@
-**# 🍽️ Restaurant Review Analysis Using LLM
+# 🍽️ Restaurant Review Sentiment Analysis using LLM Prompt Engineering
+
+An LLM-powered pipeline that analyzes restaurant customer reviews and converts unstructured text into **structured sentiment insights, aspect-level feedback, liked/disliked features, and customer responses**.
+
+This project uses **Mistral-7B-Instruct-v0.1** with **prompt engineering only** — no fine-tuning and no RAG.
+
+---
 
 ## 📌 Project Overview
 
-Customer reviews contain valuable information about food quality, service, and restaurant ambience. However, manually analyzing a large number of reviews can be time-consuming.
+Customer reviews contain valuable information about food quality, service, ambience, and overall customer satisfaction.
 
-This project uses a **Large Language Model (LLM)** to automatically analyze restaurant reviews and extract useful customer insights.
+However, manually analyzing a large number of reviews is time-consuming and difficult to scale.
 
-The project uses **Mistral-7B-Instruct** with **Prompt Engineering** to perform sentiment analysis, aspect-level analysis, feature extraction, and customer response generation.
+This project automates the review analysis process using an LLM. For every review, the system:
 
-**No Fine-Tuning or RAG is used in this project.**
+- Identifies the overall sentiment
+- Performs aspect-based sentiment analysis
+- Extracts liked and disliked features
+- Generates a polite, sentiment-aware customer response
 
----
-
-## 🎯 Objective
-
-The main objective of this project is to analyze restaurant reviews using an LLM and generate meaningful insights.
-
-The system performs the following tasks:
-
-* Identify the overall sentiment of each review.
-* Analyze sentiment for **Food Quality, Service, and Ambience**.
-* Extract liked and disliked features from each aspect.
-* Generate a polite and empathetic response for each customer.
-* Provide actionable insights from customer feedback.
+The goal is to transform raw customer reviews into **actionable restaurant insights**.
 
 ---
 
-## 🗂️ Dataset
+## 🎯 Objectives
 
-The dataset contains restaurant customer reviews.
+### 1. Overall Sentiment Analysis
+Classify each review as:
 
-| Column          | Description                  |
-| --------------- | ---------------------------- |
-| `restaurant_id` | Unique ID of the restaurant  |
-| `rating_review` | Rating given by the customer |
-| `review_full`   | Full customer review         |
+- 🟢 Positive
+- 🟡 Neutral
+- 🔴 Negative
 
-**Dataset Size:** 20 rows and 3 columns
-**Missing Values:** No missing values
+### 2. Aspect-Based Sentiment Analysis
 
----
+Analyze sentiment for:
 
-## 🧠 Model Used
+- 🍴 Food Quality
+- 👨‍🍳 Service
+- 🏠 Ambience
 
-**Model:** `mistralai/Mistral-7B-Instruct-v0.1`
+If an aspect is not mentioned in the review, it is classified as **Not Applicable (N/A)**.
 
-The model is loaded from **Hugging Face** and used for different restaurant review analysis tasks.
+### 3. Feature Extraction
 
-### Model Configuration
+Identify specific positive and negative points mentioned by customers.
 
-* 8-bit quantization using `bitsandbytes`
-* `torch.float16` precision
-* Automatic device mapping
-* Google Colab GPU environment
+**Examples:**
 
-A reusable `query_mistral()` function is used to send different prompts to the model.
+- Food → Taste, freshness, portion size
+- Service → Waiting time, staff behaviour
+- Ambience → Lighting, cleanliness, atmosphere
 
-This allows multiple tasks to be performed without retraining the model.
+### 4. Customer Response Generation
 
----
-
-## 🔄 Project Workflow
-
-The project follows a **multi-stage prompt engineering pipeline**.
-
-### 1️⃣ Overall Sentiment Analysis
-
-The model analyzes each review and classifies it as:
-
-* Positive
-* Negative
-* Neutral
-
-The output is generated in a structured JSON format for easier processing.
-
-### 2️⃣ Aspect-Level Sentiment Analysis
-
-Each review is analyzed based on three important restaurant aspects:
-
-* 🍴 Food Quality
-* 👨‍🍳 Service
-* 🏠 Ambience
-
-This helps identify which part of the restaurant experience affects customer satisfaction.
-
-### 3️⃣ Liked & Disliked Feature Extraction
-
-The system extracts specific features that customers liked or disliked.
-
-Examples:
-
-* **Food:** Taste, freshness, portion size
-* **Service:** Staff behaviour, waiting time
-* **Ambience:** Seating, cleanliness, atmosphere
-
-This provides more detailed and actionable customer feedback.
-
-### 4️⃣ Customer Response Generation
-
-The LLM generates a polite and empathetic response based on the customer's review.
-
-This can help restaurants respond to customer feedback more efficiently.
+Generate a polite and context-aware response based on the customer's sentiment and feedback.
 
 ---
 
-## 📊 Key Findings
+## 📂 Dataset
 
-### Overall Sentiment
+The project uses a CSV file named:
+
+```text
+restaurant_reviews.csv
+```
+
+### Dataset Structure
+
+| Column | Description |
+|---|---|
+| `restaurant_ID` | Unique restaurant identifier |
+| `rating_review` | Customer star rating |
+| `review_full` | Complete customer review |
+
+### Dataset Details
+
+- Total reviews: **20**
+- Ratings: **1, 3, and 5 stars**
+- 5 stars → Positive
+- 3 stars → Neutral
+- 1 star → Negative
+
+> ⭐ Star ratings are used as proxy labels for evaluating overall sentiment.
+
+The dataset is not included in this repository.
+
+---
+
+## 🛠️ Tech Stack
+
+### Programming Language
+
+- Python
+
+### LLM
+
+- `mistralai/Mistral-7B-Instruct-v0.1`
+
+### Libraries
+
+- Transformers
+- PyTorch
+- Accelerate
+- BitsAndBytes
+- Pandas
+- Scikit-learn
+
+### Environment
+
+- Google Colab
+- NVIDIA T4 GPU or better
+
+---
+
+## ⚙️ System Workflow
+
+```text
+Customer Reviews CSV
+        ↓
+Load & Preprocess Reviews
+        ↓
+Load Mistral-7B-Instruct
+        ↓
+Prompt 1
+Overall Sentiment
+        ↓
+Prompt 2
+Aspect-Level Sentiment
+        ↓
+Prompt 3
+Liked / Disliked Features
+        ↓
+Evaluate Predictions
+        ↓
+Zero-shot vs Few-shot Comparison
+        ↓
+Prompt 4
+Customer Response Generation
+        ↓
+Structured JSON Output
+```
+
+---
+
+## 🔑 Key Techniques
+
+### 🧠 Prompt Engineering
+
+The project relies on carefully designed prompts to guide the LLM to produce consistent sentiment classifications and structured outputs.
+
+No model fine-tuning was performed.
+
+### 📦 Structured JSON Output
+
+The prompts instruct the model to return information in a predefined JSON structure.
+
+Example:
+
+```json
+{
+  "overall_sentiment": "Positive",
+  "food_quality": "Positive",
+  "service": "Neutral",
+  "ambience": "Positive"
+}
+```
+
+This makes the model output easier to process programmatically.
+
+### 🔄 JSON Extraction & Retry
+
+LLM responses may occasionally contain malformed or additional text.
+
+To handle this, the pipeline uses:
+
+- Regex-based JSON extraction
+- `json.loads()`
+- Retry handling for invalid responses
+
+### 🎯 Deterministic Generation
+
+The model uses:
+
+```python
+do_sample=False
+```
+
+This helps produce reproducible outputs during evaluation.
+
+### ⚡ Quantized Model Loading
+
+The notebook attempts different model-loading configurations depending on the available GPU memory:
+
+```text
+8-bit quantization
+      ↓
+4-bit quantization
+      ↓
+FP16 fallback
+```
+
+This makes the notebook more flexible across different Colab GPU environments.
+
+---
+
+## 🔬 Prompting Approach
+
+Two prompting strategies were compared.
+
+### Baseline — Zero-Shot
+
+The model receives the task instructions without example outputs.
+
+### Improved — Few-Shot + Definitions
+
+The prompt was enhanced with:
+
+- Clear sentiment definitions
+- Aspect definitions
+- Example inputs and outputs
+- More explicit classification instructions
+
+This was tested to determine whether additional prompt guidance improved performance.
+
+---
+
+## 📊 Evaluation Results
+
+Star ratings were used as proxy ground truth:
+
+| Rating | Proxy Sentiment |
+|---:|---|
+| ⭐⭐⭐⭐⭐ 5 | Positive |
+| ⭐⭐⭐ 3 | Neutral |
+| ⭐ 1 | Negative |
+
+### Overall Sentiment Performance
+
+| Prompt | Accuracy | Macro-F1 |
+|---|---:|---:|
+| Baseline — Zero-Shot | **0.95** | **0.95** |
+| Few-Shot + Definitions | **0.95** | **0.95** |
+
+### Predicted Sentiment Distribution
 
 | Sentiment | Reviews |
-| --------- | ------: |
-| Negative  |       8 |
-| Positive  |       6 |
-| Neutral   |       6 |
-
-Negative reviews were slightly higher than positive and neutral reviews.
-
-### Food Quality
-
-| Sentiment      | Reviews |
-| -------------- | ------: |
-| Negative       |       8 |
-| Positive       |       6 |
-| Neutral        |       5 |
-| Not Applicable |       1 |
-
-Food quality showed a slightly negative trend.
-
-### Service
-
-| Sentiment | Reviews |
-| --------- | ------: |
-| Negative  |      10 |
-| Positive  |       8 |
-| Neutral   |       2 |
-
-**Service was the most criticized aspect** in the dataset.
-
-### Ambience
-
-| Sentiment      | Reviews |
-| -------------- | ------: |
-| Positive       |       8 |
-| Neutral        |       6 |
-| Not Applicable |       5 |
-| Negative       |       1 |
-
-**Ambience was the strongest positive aspect** in the dataset.
+|---|---:|
+| Positive | 6 |
+| Neutral | 7 |
+| Negative | 7 |
 
 ---
 
-## 💡 Key Insight
+## 📌 Aspect-Level Results
 
-The analysis shows that **Service is the main area that restaurants need to improve, while Ambience is one of their strongest positive factors.**
+### 👨‍🍳 Service
 
-This type of analysis can help restaurants identify customer pain points and improve their overall customer experience.
+- Negative: **10**
+- Positive: **9**
+- Neutral: **1**
+
+### 🍴 Food Quality
+
+- Positive: **7**
+- Negative: **6**
+- Neutral: **5**
+- N/A: **2**
+
+### 🏠 Ambience
+
+- Positive: **8**
+- Neutral: **7**
+- N/A: **4**
+- Negative: **1**
+
+These aspect-level results help identify which parts of the restaurant experience customers are satisfied or dissatisfied with.
 
 ---
 
-## ⚙️ Prompt Engineering Approach
+## 🔍 Error Analysis
 
-Instead of training a new machine learning model, this project uses carefully designed prompts to control the LLM's output.
+The evaluation identified **1 misclassified review**.
 
-Different prompts are used for:
+The review had a **5-star rating**, but the model classified it as **Neutral**.
 
-* Sentiment classification
-* Aspect-level sentiment analysis
-* Feature extraction
-* Customer response generation
-
-The same LLM can perform multiple tasks by changing the instruction prompt.
+This highlights an important limitation of using star ratings as proxy sentiment labels: a high rating does not always perfectly correspond to the sentiment expressed in the review text.
 
 ---
 
-## 🛠️ Technologies Used
+## 🚀 How to Run
 
-**Programming Language**
+### 1. Open Google Colab
 
-* Python
+Open the project notebook in Google Colab.
 
-**LLM & NLP**
+### 2. Enable GPU
 
-* Mistral-7B-Instruct
-* Hugging Face Transformers
-* Prompt Engineering
+Go to:
 
-**Model Inference**
+```text
+Runtime → Change runtime type → T4 GPU
+```
 
-* PyTorch
-* Accelerate
-* BitsAndBytes
+### 3. Install Dependencies
 
-**Data Processing**
+Run the installation cell provided in the notebook.
 
-* Pandas
-* JSON
+After installation:
 
-**Environment**
+```text
+Runtime → Restart session
+```
 
-* Google Colab
-* Google Drive
-* GPU Runtime
+> ⚠️ Do not run the installation cell again after restarting the session.
+
+### 4. Upload Dataset
+
+Upload:
+
+```text
+restaurant_reviews.csv
+```
+
+to Google Drive.
+
+Update the dataset path in the notebook accordingly.
+
+### 5. Hugging Face Token — Optional
+
+A Hugging Face token can optionally be added as a Colab secret:
+
+```text
+HF_TOKEN
+```
+
+The model is publicly available, so a token is not required for normal access.
+
+### 6. Run the Notebook
+
+Run the remaining cells in order.
 
 ---
 
 ## 📁 Project Structure
 
 ```text
-Restaurant-Review-Analysis/
+restaurant-review-sentiment/
 │
-├── Restaurant_Review_Analysis_Using_LLM.ipynb
+├── restaurant_review_sentiment.ipynb
 ├── README.md
-│
-└── data/
-    ├── restaurant_reviews.csv
-    └── config.json
+└── restaurant_reviews.csv   # Not included in repository
 ```
-
-> Dataset and configuration files are not included in the repository.
 
 ---
 
-## ▶️ How to Run
+## 💡 Example Use Case
 
-### Step 1: Open the Notebook
+A restaurant receives hundreds of customer reviews every day.
 
-Open the project notebook in **Google Colab**.
+Instead of manually reading every review, this system can automatically identify:
 
-### Step 2: Enable GPU
+```text
+Overall Sentiment
+        ↓
+Positive / Neutral / Negative
 
-Go to:
+        +
 
-`Runtime → Change runtime type → GPU`
+Food Quality
+        ↓
+Positive / Neutral / Negative / N/A
 
-### Step 3: Install Required Libraries
+        +
 
-```bash
-pip install transformers accelerate bitsandbytes
+Service
+        ↓
+Positive / Neutral / Negative / N/A
+
+        +
+
+Ambience
+        ↓
+Positive / Neutral / Negative / N/A
+
+        +
+
+Customer Feedback
+        ↓
+Liked / Disliked Features
+
+        +
+
+LLM Generated Response
 ```
 
-Restart the runtime if required.
-
-### Step 4: Add Required Files
-
-Place the following files in the required Google Drive location:
-
-* `restaurant_reviews.csv`
-* `config.json`
-
-### Step 5: Run the Notebook
-
-Run all cells sequentially.
-
-The Mistral-7B model may take some time to load depending on the available GPU.
-
-### Step 6: View the Results
-
-The notebook generates:
-
-* Overall sentiment
-* Aspect-level sentiment
-* Liked features
-* Disliked features
-* Customer responses
-
----
-
-## 📈 Evaluation
-
-The model output can be evaluated using manually labeled reviews.
-
-A subset of reviews can be manually classified and compared with the LLM predictions.
-
-This can be used to calculate:
-
-* Accuracy
-* Precision
-* Recall
-* F1-Score
-
-The performance can also be improved by:
-
-* Improving prompt instructions
-* Using better output formatting
-* Adjusting `temperature`
-* Adjusting `top_p`
-* Testing different prompts
+This can help restaurants quickly understand customer feedback and prioritize areas for improvement.
 
 ---
 
 ## ⚠️ Limitations
 
-* The dataset contains only 20 reviews.
-* LLM-generated results may vary depending on the prompt and generation settings.
-* Some reviews may contain ambiguous opinions.
-* Model outputs should be manually checked before making important business decisions.
-* The project does not use Fine-Tuning or RAG.
+- Dataset contains only **20 reviews**
+- Evaluation results are therefore indicative rather than statistically strong
+- Star ratings are only proxy labels for sentiment
+- Mistral-7B-Instruct-v0.1 is an older 7B model compared with newer LLMs
+- Prompt-based classification can still produce occasional incorrect outputs
+- Aspect-level results are not evaluated against manually annotated ground truth
 
 ---
 
-## 🚀 Future Improvements
+## 🔮 Future Improvements
 
-* Use a larger restaurant review dataset.
-* Build an interactive **Streamlit dashboard**.
-* Add automated evaluation metrics.
-* Perform restaurant-wise sentiment comparison.
-* Add sentiment visualization.
-* Analyze review trends over time.
-* Support multiple languages.
-* Compare results with other open-source LLMs.
+### 📈 Larger Dataset
+
+Use a larger dataset with manually verified sentiment and aspect labels.
+
+### 🏷️ Human-Annotated Ground Truth
+
+Create reliable labels for:
+
+- Overall sentiment
+- Food sentiment
+- Service sentiment
+- Ambience sentiment
+
+### 🤖 Newer LLMs
+
+Experiment with newer and stronger open-source or commercial LLMs.
+
+### 🖥️ Gradio Interface
+
+Build an interactive interface where users can enter a restaurant review and instantly receive:
+
+- Overall sentiment
+- Aspect sentiment
+- Key feedback
+- Generated response
+
+### 📊 Restaurant Insight Dashboard
+
+Create a dashboard that aggregates reviews by restaurant and displays:
+
+- Sentiment distribution
+- Food satisfaction
+- Service satisfaction
+- Ambience satisfaction
+- Common complaints
+- Common positive features
 
 ---
 
-## 👨‍💻 Project Highlights
+## 🎓 Key Learning Outcomes
 
-* Built an **LLM-based restaurant review analysis system**.
-* Used **Mistral-7B-Instruct** for natural language understanding.
-* Applied **Prompt Engineering** without Fine-Tuning or RAG.
-* Implemented multi-stage sentiment and aspect analysis.
-* Extracted actionable customer feedback.
-* Generated automated customer responses.
-**
+Through this project, I gained practical experience in:
+
+- Large Language Models (LLMs)
+- Prompt Engineering
+- Zero-shot and Few-shot Prompting
+- Sentiment Analysis
+- Aspect-Based Sentiment Analysis
+- Structured JSON generation
+- LLM output parsing and validation
+- Quantized model loading
+- Hugging Face Transformers
+- GPU-based inference
+- Model evaluation using Accuracy and Macro-F1
+- Error analysis
+
+---
+
+## 📜 License
+
+This project is created for **educational purposes**.
+
+The Mistral-7B-Instruct-v0.1 model is released under the **Apache 2.0 License**.
+
+---
+
+## 👨‍💻 Project Summary
+
+**Restaurant Review Sentiment Analysis using LLM Prompt Engineering**
+
+> An end-to-end LLM-based system that transforms raw restaurant reviews into structured sentiment insights, aspect-level feedback, key customer preferences, and automated responses using **Mistral-7B-Instruct-v0.1 and prompt engineering**.
