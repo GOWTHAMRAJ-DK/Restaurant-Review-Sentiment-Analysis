@@ -1,4 +1,4 @@
-# 🍽️ Restaurant Review Analysis Using LLM
+**# 🍽️ Restaurant Review Analysis Using LLM
 
 ## 📌 Project Overview
 
@@ -320,3 +320,4 @@ The performance can also be improved by:
 * Implemented multi-stage sentiment and aspect analysis.
 * Extracted actionable customer feedback.
 * Generated automated customer responses.
+**
